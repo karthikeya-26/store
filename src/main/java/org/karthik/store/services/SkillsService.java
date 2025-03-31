@@ -30,9 +30,7 @@ public class SkillsService {
         if(skillId<=0 ){
             throw new IllegalArgumentException("Skill id must be greater than 0");
         }
-        System.out.println("hi from skill service");
         Skills skill =  skillsDao.getSkillBySkillId(userName,skillId);
-        System.out.println("skill in skill service after dao:"+skill);
         if(skill==null){
             throw new DataNotFoundException("Skill with id "+skillId+" for user "+userName+"  not found");
         }

@@ -39,13 +39,11 @@ public class UserDetailsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserDetails getUserDetails(@Context UriInfo uriInfo, @PathParam("userName") String userName) {
-        System.out.println("userName = " + userName);
         UserDetails userDetails = userDetailsService.getUserDetails(userName);
         if(userDetails == null){
             throw new DataNotFoundException("User does not exist");
         }
         String uri= uriInfo.getBaseUriBuilder().path(UserDetailsResource.class).path(userName).toString();
-        System.out.println(uri);
         userDetails.addLink("self", uri);
         return userDetails;
     }
@@ -72,7 +70,6 @@ public class UserDetailsResource {
 
     @Path("/{userName}/skills")
     public SkillsResource getSkillsResource(@PathParam("userName") String userName) {
-        System.out.println("getSkillsResource "+userName);
         return new SkillsResource();
     }
 

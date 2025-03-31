@@ -1,11 +1,15 @@
 package org.karthik.store.filters;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.spi.LoggerContext;
 import org.karthik.store.cache.SessionCacheManager;
-import org.karthik.store.cache.UserDetailsCacheManager;
 import org.karthik.store.models.ErrorMessage;
 import org.karthik.store.models.Link;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -17,14 +21,12 @@ import java.io.IOException;
 import org.karthik.store.models.Sessions;
 @PreMatching
 @Provider
-
+@Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
-
+    private static final Logger logger = LogManager.getLogger(AuthenticationFilter.class);
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-
-        System.out.println("AuthFilter");
         if (isPublicUrl(requestContext.getUriInfo().getPath())) {
             return;
         }
@@ -34,17 +36,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             handleUnAuthenticatedRequest(requestContext);
             return;
         }
-        String sessionId = requestContext.getCookies().get("session_id").getValue();
-        System.out.println("Session Id : " + sessionId);
-        boolean isAuthorized = checkAuthorization(sessionId, requestContext);
-        System.out.println(isAuthorized+" isAuthorized");
-        System.out.println("Session Id : " + sessionId);
-        Sessions session = SessionCacheManager.getSession(sessionId);
-        System.out.println("Session : " + session);
-
+        Sessions session = SessionCacheManager.getSession(requestContext.getCookies().get("session_id").getValue());
         requestContext.setProperty("session_id", session.getSessionId());
         requestContext.setProperty("user_id", session.getUserId());
-        System.out.println("filter success");
     }
 
 
@@ -54,8 +48,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 
     private boolean checkAuthentication(ContainerRequestContext requestContext) {
-        boolean hasSessionId = requestContext.getCookies().get("session_id") != null && !requestContext.getCookies().get("session_id").getValue().isEmpty();
-        System.out.println("has session id : " + hasSessionId + " "+requestContext.getCookies().get("session_id").getValue());
+        boolean hasSessionId = (requestContext.getCookies().get("session_id") != null) ? !requestContext.getCookies().get("session_id").getValue().isEmpty() : false;
         if(!hasSessionId) {
             return false;
         }

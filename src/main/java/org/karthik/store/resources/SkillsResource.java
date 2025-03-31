@@ -57,11 +57,11 @@ public class SkillsResource {
 
     @DELETE
     @Path("/{skillId}")
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteSkills(@PathParam("userName") String userName, @PathParam("skillId") int skillId) {
         if(skillsService.getSkillBySkillId(userName,skillId)==null){
             throw new DataNotFoundException("Skill does not exist for user "+userName);
         }
+        System.out.println("in deleteSkills");
         skillsService.deleteSkill(skillId);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
