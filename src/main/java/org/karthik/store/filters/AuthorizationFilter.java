@@ -1,14 +1,11 @@
 package org.karthik.store.filters;
 
 
-import com.google.gson.internal.bind.util.ISO8601Utils;
 import org.karthik.store.cache.SessionCacheManager;
 import org.karthik.store.cache.UserDetailsCacheManager;
 import org.karthik.store.models.ErrorMessage;
 import org.karthik.store.models.Sessions;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.MediaType;
@@ -21,7 +18,7 @@ import java.io.IOException;
 public class AuthorizationFilter implements ContainerRequestFilter {
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext)  {
         System.out.println("AuthorizationFilter");
         if (isPublicUrl(requestContext.getUriInfo().getPath())) {
             return;
@@ -48,7 +45,6 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     }
 
     private void handleUnAuthorizedRequest(ContainerRequestContext requestContext) {
-        UriInfo uriInfo = requestContext.getUriInfo();
         ErrorMessage errorMessage = new ErrorMessage("You are not allowed to perform this action", 403);
         Response response = Response.status(Response.Status.FORBIDDEN).entity(errorMessage).type(MediaType.APPLICATION_JSON).build();
         requestContext.abortWith(response);
