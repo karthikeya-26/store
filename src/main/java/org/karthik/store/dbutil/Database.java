@@ -21,18 +21,14 @@ public class Database {
     private static  HikariDataSource dataSource;
 
     static {
-        try {
             openPool();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
-    public static void openPool() throws SQLException {
+    public static void openPool()  {
         System.out.println("Opening database connection pool");
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(properties.getProperty("database_url"));
