@@ -12,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 
 @Provider
 public class AuthorizationFilter implements ContainerRequestFilter {
