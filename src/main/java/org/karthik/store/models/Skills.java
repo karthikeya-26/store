@@ -3,11 +3,11 @@ package org.karthik.store.models;
 import java.math.BigDecimal;
 
 public class Skills {
-    private Integer skillId;
+    private Long skillId;
     private String skillName;
     private String skillDescription;
     private Integer UserId;
-    private BigDecimal price;
+    private BigDecimal pricePerHour;
     private Long createdAt;
     private Long updatedAt;
 
@@ -19,12 +19,12 @@ public class Skills {
         this.createdAt = createdAt;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getPricePerHour() {
+        return pricePerHour;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setPricePerHour(BigDecimal price) {
+        this.pricePerHour = price;
     }
 
     public Integer getUserId() {
@@ -51,11 +51,11 @@ public class Skills {
         this.skillName = skillName;
     }
 
-    public Integer getSkillId() {
+    public Long getSkillId() {
         return skillId;
     }
 
-    public void setSkillId(int skillId) {
+    public void setSkillId(Long skillId) {
         this.skillId = skillId;
     }
 
@@ -74,7 +74,7 @@ public class Skills {
                 ", skillName='" + skillName + '\'' +
                 ", skillDescription='" + skillDescription + '\'' +
                 ", UserId=" + UserId +
-                ", price=" + price +
+                ", price=" + pricePerHour +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

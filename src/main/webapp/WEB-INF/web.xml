@@ -3,14 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <filter>
+        <filter-name>Security Filter</filter-name>
+        <filter-class>com.adventnet.iam.security.SecurityFilter</filter-class>
+        <init-param>
+            <param-name>config-file</param-name>
+            <param-value>/home/karthi-pt7680/Downloads/AdventNetMickeyLite/AdventNet/MickeyLite/webapps/ROOT/WEB-INF/conf</param-value>
+        </init-param>
+    </filter>
 
+    <filter-mapping>
+        <filter-name>Security Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <!-- Servlet configuration for Jersey REST Service -->
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>org.karthik.store.resources,org.karthik.store.exceptions,org.karthik.store</param-value>
+            <param-value>org.karthik.store.resources,org.karthik.store.exceptions,org.karthik.store.filters</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -19,6 +31,16 @@
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+    
+<!--    <servlet>-->
+<!--        <servlet-name>Karthik Hello Servlet</servlet-name>-->
+<!--        <servlet-class>org.karthik.store.resources.HelloResource</servlet-class>-->
+<!--    </servlet>-->
+<!--    -->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>Karthik Hello Servlet</servlet-name>-->
+<!--        <url-pattern>/api/hello</url-pattern>-->
+<!--    </servlet-mapping>-->
 
     <listener>
         <listener-class>org.karthik.store.listeners.AppListener</listener-class>

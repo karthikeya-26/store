@@ -6,9 +6,9 @@
 
     <groupId>org.karthik.store</groupId>
     <artifactId>store</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1</version>
     <name>store</name>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,11 +34,7 @@
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>2.34</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-cdi2-se</artifactId>
-            <version>2.34</version>
-        </dependency>
+
         <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>javax.ejb-api</artifactId>
@@ -79,26 +75,87 @@
             <artifactId>HikariCP</artifactId>
             <version>4.0.3</version>  <!-- Compatible with Java 8 -->
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.21.1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.17.1</version>
+            <version>2.21.1</version>
         </dependency>
-        <!-- Log4j Core (Required for logging) -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.17.1</version>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.38</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+            <version>2.34</version>
+        </dependency>
+        <!-- system dependencies -->
+        <dependency>
+            <groupId>com.adventnet.mfw</groupId>
+            <artifactId>AdventnetMicroframework</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/karthi-pt7680/Downloads/AdventNetMickeyLite/AdventNet/MickeyLite/lib/AdvMicroFramework.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.adventnet.persistence</groupId>
+            <artifactId>AdventnetPersistence</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>/home/karthi-pt7680/Downloads/AdventNetMickeyLite/AdventNet/MickeyLite/lib/AdvPersistence.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-war-plugin</artifactId>-->
+<!--                <version>3.3.2</version>-->
+<!--                <configuration>-->
+<!--                    <outputDirectory>${project.basedir}/../../AdventNetMickeyLite/AdventNet/MickeyLite/webapps</outputDirectory>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                     <outputDirectory>${project.basedir}/../../AdventNetMickeyLite/AdventNet/MickeyLite/webapps</outputDirectory>
+                </configuration>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>build-helper-maven-plugin</artifactId>-->
+<!--                <version>3.2.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>add-mickey-jars</id>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>add-resource</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>${project.basedir}/../../AdventNetMickeyLite/AdventNet/MickeyLite/lib/</directory>-->
+<!--                                    <includes>-->
+<!--                                        <include>**/*.jar</include>-->
+<!--                                    </includes>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

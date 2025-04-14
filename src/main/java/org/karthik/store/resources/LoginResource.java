@@ -1,29 +1,29 @@
 package org.karthik.store.resources;
 
-import org.karthik.store.cache.SessionCacheManager;
-import org.karthik.store.cache.UserDetailsCacheManager;
-import org.karthik.store.dao.UserDetailsDao;
 import org.karthik.store.exceptions.NotAuthorizedException;
 import org.karthik.store.models.LoginRequest;
 import org.karthik.store.models.Sessions;
-import org.karthik.store.models.UserDetails;
 import org.karthik.store.services.UserDetailsService;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import java.util.logging.Logger;
 
 @Path("/login")
 public class LoginResource {
 
-    private final UserDetailsService userDetailsService = new UserDetailsService();
+    private static final Logger LOGGER = Logger.getLogger(LoginResource.class.getName());
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
-        Sessions session = userDetailsService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+        Sessions session = UserDetailsService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
         if(session == null){
             throw new NotAuthorizedException("Invalid username or password");
         }

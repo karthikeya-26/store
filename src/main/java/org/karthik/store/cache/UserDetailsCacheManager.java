@@ -5,7 +5,6 @@ import org.karthik.store.models.UserDetails;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class UserDetailsCacheManager {
 

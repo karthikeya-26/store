@@ -1,27 +1,34 @@
 package org.karthik.store.resources;
 
 
-import org.karthik.store.exceptions.AlreadyExistsException;
 import org.karthik.store.exceptions.DataNotFoundException;
+import org.karthik.store.exceptions.InternalServerErrorExcetion;
 import org.karthik.store.models.UserDetails;
 import org.karthik.store.services.UserDetailsService;
 
+import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @Path("/users")
+@Singleton
 public class UserDetailsResource {
-
-    private final UserDetailsService userDetailsService = new UserDetailsService();
-
+    private int counter = 0;
+    public UserDetailsResource() {
+        System.out.println(" creating user resource object counter = " + counter++ + "");
+    }
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserDetails> getUserDetails() {
-        return userDetailsService.getAllUserDetails();
+        List<UserDetails> users;
+        users =  UserDetailsService.getAllUserDetails();
+        return users;
     }
 
 //    @POST
@@ -39,7 +46,7 @@ public class UserDetailsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserDetails getUserDetails(@Context UriInfo uriInfo, @PathParam("userName") String userName) {
-        UserDetails userDetails = userDetailsService.getUserDetails(userName);
+        UserDetails userDetails = UserDetailsService.getUserDetails(userName);
         if(userDetails == null){
             throw new DataNotFoundException("User does not exist");
         }
@@ -54,7 +61,7 @@ public class UserDetailsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserDetails updateUserDetails(@PathParam("userName") String userName, UserDetails userDetails) {
         userDetails.setUserName(userName);
-        return userDetailsService.updateUserDetails(userDetails);
+        return UserDetailsService.updateUserDetails(userDetails);
     }
 
     @DELETE
@@ -62,10 +69,10 @@ public class UserDetailsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void deleteUserDetails(@PathParam("userName") String userName) {
-        if(userDetailsService.getUserDetails(userName)==null){
+        if(UserDetailsService.getUserDetails(userName)==null){
             throw new DataNotFoundException("User does not exist");
         }
-        userDetailsService.removeUserDetails(userName);
+        UserDetailsService.removeUserDetails(userName);
     }
 
     @Path("/{userName}/skills")

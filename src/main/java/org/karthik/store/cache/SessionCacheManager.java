@@ -14,6 +14,8 @@ public class SessionCacheManager {
     private static final Map<String, Sessions> sessionCache = new LinkedHashMap<String,Sessions>(MAX_CACHE_SIZE, 0.75f, true){
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, Sessions> eldest) {
+            System.out.println(eldest.getKey()+"/"+eldest.getValue());
+            System.out.println("Size of cache: "+size());
             return size() > MAX_CACHE_SIZE;
         }
     };
@@ -32,6 +34,12 @@ public class SessionCacheManager {
             }
         }
         return sessions;
+    }
+
+    public static void removeSession(String sessionId){
+        synchronized (sessionCache){
+            sessionCache.remove(sessionId);
+        }
     }
 
     public static void addSession(Sessions sessions){

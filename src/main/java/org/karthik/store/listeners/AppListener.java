@@ -10,7 +10,11 @@ public class AppListener implements ServletContextListener {
     @Override
     public void contextInitialized(javax.servlet.ServletContextEvent sce) {
         AppPropertiesHelper.loadProperties();
-        Database.openPool();
+        try {
+            Database.openPool();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

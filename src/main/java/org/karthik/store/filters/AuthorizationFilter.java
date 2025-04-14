@@ -12,22 +12,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
+import java.util.logging.Logger;
 
-@Provider
+//@Provider
 public class AuthorizationFilter implements ContainerRequestFilter {
+
+    private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class.getName());
 
     @Override
     public void filter(ContainerRequestContext requestContext)  {
-        System.out.println("AuthorizationFilter");
         if (isPublicUrl(requestContext.getUriInfo().getPath())) {
             return;
         }
         boolean isAuthorized  = checkAuthorization(requestContext);
-        System.out.println();
-        System.out.println("Is Authorized : " + isAuthorized);
+        Sessions session = SessionCacheManager.getSession(requestContext.getCookies().get("session_id").getValue());
         if(!isAuthorized){
+            LOGGER.info(String.format("User_Id %s, Session_Id %s, URI %s, RequestMethod %s -> Not Authorized", session.getSessionId(),session.getUserId(),requestContext.getUriInfo().getPath(),requestContext.getMethod()));
             handleUnAuthorizedRequest(requestContext);
+            return;
         }
+        LOGGER.info(String.format("User_Id %s, Session_Id %s, URI %s, RequestMethod %s -> Authorized", session.getSessionId(),session.getUserId(),requestContext.getUriInfo().getPath(),requestContext.getMethod()));
     }
 
     private boolean isPublicUrl(String requestUri) {

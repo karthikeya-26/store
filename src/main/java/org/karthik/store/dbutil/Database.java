@@ -5,24 +5,31 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.karthik.store.util.AppPropertiesHelper;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 
 public class Database {
-    public static Properties properties = AppPropertiesHelper.getProperties();
+
+    public static Properties properties;
 
     private static  HikariDataSource dataSource;
 
     static {
-            openPool();
+           try {
+               properties =AppPropertiesHelper.getProperties();
+               openPool();
+           }catch (Exception e){
+              e.printStackTrace();
+           }
     }
 
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
-    public static void openPool()  {
+    public static void openPool()  throws Exception {
         System.out.println("Opening database connection pool");
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(properties.getProperty("database_url"));
@@ -34,6 +41,7 @@ public class Database {
         config.setIdleTimeout(30000);
         config.setMaxLifetime(1800000);
         dataSource = new HikariDataSource(config);
+        System.out.println("Opened database connection pool");
     }
 
     public static void closePool() {

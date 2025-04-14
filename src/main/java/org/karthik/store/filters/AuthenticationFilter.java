@@ -1,12 +1,10 @@
 package org.karthik.store.filters;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.spi.LoggerContext;
 import org.karthik.store.cache.SessionCacheManager;
 import org.karthik.store.models.ErrorMessage;
 import org.karthik.store.models.Link;
+import org.karthik.store.models.Sessions;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -17,35 +15,35 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.logging.Logger;
 
-import org.karthik.store.models.Sessions;
-@PreMatching
-@Provider
-@Priority(Priorities.AUTHENTICATION)
+//@PreMatching
+//@Provider
+//@Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LogManager.getLogger(AuthenticationFilter.class);
+    private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class.getName());
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (isPublicUrl(requestContext.getUriInfo().getPath())) {
             return;
         }
         boolean isAuthenticated = checkAuthentication(requestContext);
-        System.out.println("Is Authenticated : " + isAuthenticated);
         if (!isAuthenticated) {
+            LOGGER.info(String.format("User_Id %s, Session_Id %s, URI %s, RequestMethod %s -> Not Authenticated", null,null,requestContext.getUriInfo().getPath(),requestContext.getMethod()));
             handleUnAuthenticatedRequest(requestContext);
             return;
         }
         Sessions session = SessionCacheManager.getSession(requestContext.getCookies().get("session_id").getValue());
         requestContext.setProperty("session_id", session.getSessionId());
         requestContext.setProperty("user_id", session.getUserId());
+        LOGGER.info(String.format("User_Id %s, Session_Id %s, URI %s, RequestMethod %s -> Authenticated", session.getSessionId(),session.getUserId(),requestContext.getUriInfo().getPath(),requestContext.getMethod()));
     }
-
 
     private boolean isPublicUrl(String requestUri) {
         return requestUri.matches("^(login|api/login|public/).*");
     }
-
 
     private boolean checkAuthentication(ContainerRequestContext requestContext) {
         boolean hasSessionId = (requestContext.getCookies().get("session_id") != null) ? !requestContext.getCookies().get("session_id").getValue().isEmpty() : false;
@@ -71,13 +69,4 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         Response response = Response.status(Response.Status.UNAUTHORIZED).entity(notAuthenticatedMessage).build();
         requestContext.abortWith(response);
     }
-
-    private void handleUnAuthorizedRequest(ContainerRequestContext requestContext) {
-        UriInfo uriInfo = requestContext.getUriInfo();
-        //log the action
-        ErrorMessage errorMessage = new ErrorMessage("You are not allowed to perform this action", 403);
-        Response response = Response.status(Response.Status.FORBIDDEN).entity(errorMessage).build();
-        requestContext.abortWith(response);
-    }
-
 }
