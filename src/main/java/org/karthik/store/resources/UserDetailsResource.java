@@ -19,10 +19,7 @@ import java.util.List;
 @Path("/users")
 @Singleton
 public class UserDetailsResource {
-    private int counter = 0;
-    public UserDetailsResource() {
-        System.out.println(" creating user resource object counter = " + counter++ + "");
-    }
+    public UserDetailsResource() {}
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserDetails> getUserDetails() {
@@ -46,7 +43,7 @@ public class UserDetailsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserDetails getUserDetails(@Context UriInfo uriInfo, @PathParam("userName") String userName) {
-        UserDetails userDetails = UserDetailsService.getUserDetails(userName);
+            UserDetails userDetails = UserDetailsService.getUserDetails(userName);
         if(userDetails == null){
             throw new DataNotFoundException("User does not exist");
         }

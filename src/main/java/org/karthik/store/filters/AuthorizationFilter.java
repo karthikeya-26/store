@@ -14,7 +14,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.util.logging.Logger;
 
-//@Provider
+@Provider
 public class AuthorizationFilter implements ContainerRequestFilter {
 
     private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class.getName());

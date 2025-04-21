@@ -9,15 +9,15 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.logging.Logger;
 
 @Path("/login")
 public class LoginResource {
 
     private static final Logger LOGGER = Logger.getLogger(LoginResource.class.getName());
+    @Context
+    private UriInfo uriInfo;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -27,7 +27,7 @@ public class LoginResource {
         if(session == null){
             throw new NotAuthorizedException("Invalid username or password");
         }
-        NewCookie cookie = new NewCookie("session_id", session.getSessionId(), "/store_war_exploded/api/", null, null, -1 , false, true);
+        NewCookie cookie = new NewCookie("session_id", session.getSessionId(),uriInfo.getBaseUri().getPath() , null, null, -1 , false, true);
         return Response.ok().cookie(cookie).build();
     }
 }

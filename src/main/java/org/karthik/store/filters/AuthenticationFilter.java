@@ -17,9 +17,9 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-//@PreMatching
-//@Provider
-//@Priority(Priorities.AUTHENTICATION)
+@PreMatching
+@Provider
+@Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
     private static final Logger LOGGER = Logger.getLogger(AuthenticationFilter.class.getName());
@@ -29,6 +29,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if (isPublicUrl(requestContext.getUriInfo().getPath())) {
             return;
         }
+        System.out.println("hi from auth filter");
         boolean isAuthenticated = checkAuthentication(requestContext);
         if (!isAuthenticated) {
             LOGGER.info(String.format("User_Id %s, Session_Id %s, URI %s, RequestMethod %s -> Not Authenticated", null,null,requestContext.getUriInfo().getPath(),requestContext.getMethod()));

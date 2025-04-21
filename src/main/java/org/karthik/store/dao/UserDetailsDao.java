@@ -7,6 +7,8 @@ import com.adventnet.persistence.*;
 import org.karthik.store.exceptions.InternalServerErrorExcetion;
 import org.karthik.store.models.UserDetails;
 
+import javax.enterprise.inject.spi.Bean;
+import javax.xml.crypto.Data;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,9 +32,6 @@ public class UserDetailsDao {
         SelectQuery selectQuery = new SelectQueryImpl(table);
         Column column = new Column("UserDetails","*");
         selectQuery.addSelectColumn(column);
-        Criteria criteria = selectQuery.getCriteria();
-
-
         RelationalAPI relationalAPI = RelationalAPI.getInstance();
         List<UserDetails> userDetailsList = new ArrayList<>();
         try (Connection connection =relationalAPI.getConnection();
@@ -70,6 +70,41 @@ public class UserDetailsDao {
         }
         return userDetails;
     }
+
+
+    public static  UserDetails getUserDetailsWithEmail(String email) {
+        UserDetails userDetails = null;
+        Table table = new Table("UserDetails");
+        SelectQuery selectQuery = new SelectQueryImpl(table);
+        Column column = new Column("UserDetails","EMAIL");
+        selectQuery.addSelectColumn(column);
+        Column column2 = new Column("UserDetails","USER_ID");
+        selectQuery.addSelectColumn(column2);
+        Criteria criteria = new Criteria(new Column("UserDetails", "EMAIL"),email,QueryConstants.EQUAL);
+        selectQuery.setCriteria(criteria);
+        try{
+            Persistence persistence = (Persistence) BeanUtil.lookup("Persistence");
+            DataObject dataObject = persistence.get(selectQuery);
+            Iterator iterator = dataObject.getRows("UserDetails");
+            while (iterator.hasNext()) {
+                Row row = (Row) iterator.next();
+                userDetails = new UserDetails();
+                userDetails.setEmail(row.getString("EMAIL"));
+                userDetails.setUserName(row.getString("USER_NAME"));
+                userDetails.setPassword(row.getString("PASSWORD"));
+                userDetails.setUserId(row.getInt("USER_ID"));
+                userDetails.setCreatedAt(row.getLong("CREATED_AT"));
+                userDetails.setUpdatedAt(row.getLong("UPDATED_AT"));
+                userDetails.setLocation(row.getString("LOCATION"));
+            }
+
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            throw new InternalServerErrorExcetion(e);
+        }
+
+        return userDetails;
+    }
     public static UserDetails getUserDetails(String userName) {
         UserDetails userDetails = null;
         Table table = new Table("UserDetails");
@@ -99,13 +134,55 @@ public class UserDetailsDao {
     }
 
     private static void prepareUserDetails(UserDetails userDetails, DataSet dataSet) throws SQLException {
-        userDetails.setUserId(dataSet.getInt("user_id"));
-        userDetails.setUserName(dataSet.getAsString("user_name"));
-        userDetails.setPassword(dataSet.getAsString("password"));
-        userDetails.setEmail(dataSet.getAsString("email"));
-        userDetails.setLocation(dataSet.getAsString("location"));
-        userDetails.setCreatedAt(dataSet.getAsLong("created_at"));
-        userDetails.setUpdatedAt(dataSet.getAsLong("updated_at")==null?0L: dataSet.getLong("updated_at"));
+//        userDetails.setUserId(dataSet.getInt("user_id"));
+//        userDetails.setUserName(dataSet.getAsString("user_name"));
+//        userDetails.setPassword(dataSet.getAsString("password"));
+//        userDetails.setEmail(dataSet.getAsString("email"));
+//        userDetails.setLocation(dataSet.getAsString("location"));
+//        userDetails.setCreatedAt(dataSet.getAsLong("created_at"));
+//        userDetails.setUpdatedAt(dataSet.getAsLong("updated_at")==null?0L: dataSet.getLong("updated_at"));
+        Integer userId = dataSet.getInt("user_id");
+        if (userId != null) {
+            userDetails.setUserId(userId);
+        }
+
+        // Set user_name with null check
+        String userName = dataSet.getAsString("user_name");
+        if (userName != null) {
+            userDetails.setUserName(userName);
+        }
+
+        // Set password with null check
+        String password = dataSet.getAsString("password");
+        if (password != null) {
+            userDetails.setPassword(password);
+        }
+
+        // Set email with null check
+        String email = dataSet.getAsString("email");
+        if (email != null) {
+            userDetails.setEmail(email);
+        }
+
+        // Set location with null check
+        String location = dataSet.getAsString("location");
+        if (location != null) {
+            userDetails.setLocation(location);
+        }
+
+        // Set created_at with null check
+        Long createdAt = dataSet.getAsLong("created_at");
+        if (createdAt != null) {
+            userDetails.setCreatedAt(createdAt);
+        }
+
+        // Set updated_at with null check
+        Long updatedAt = dataSet.getAsLong("updated_at");
+        if (updatedAt != null) {
+            userDetails.setUpdatedAt(updatedAt);
+        } else {
+            userDetails.setUpdatedAt(0L); // Default value if updated_at is null
+        }
     }
 
     private static void prepareUserDetails(UserDetails userDetails, ResultSet resultSet) throws SQLException {
@@ -148,10 +225,15 @@ public class UserDetailsDao {
             UpdateQuery updateQuery = new UpdateQueryImpl("UserDetails");
             Criteria criteria = new Criteria(new Column("UserDetails","USER_ID"),userDetails.getUserId(),QueryConstants.EQUAL);
             updateQuery.setCriteria(criteria);
-            updateQuery.setUpdateColumn("USER_NAME",userDetails.getUserName());
-            updateQuery.setUpdateColumn("PASSWORD",userDetails.getPassword());
-            updateQuery.setUpdateColumn("EMAIL",userDetails.getEmail());
-            updateQuery.setUpdateColumn("LOCATION",userDetails.getLocation());
+            if(userDetails.getPassword()!=null){
+                updateQuery.setUpdateColumn("PASSWORD",userDetails.getPassword());
+            }
+            if(userDetails.getEmail()!=null){
+                updateQuery.setUpdateColumn("EMAIL",userDetails.getEmail());
+            }
+            if(userDetails.getLocation()!=null){
+                updateQuery.setUpdateColumn("LOCATION",userDetails.getLocation());
+            }
             updateQuery.setUpdateColumn("UPDATED_AT",userDetails.getUpdatedAt());
             int updated = persistence.update(updateQuery);
         } catch (Exception e) {

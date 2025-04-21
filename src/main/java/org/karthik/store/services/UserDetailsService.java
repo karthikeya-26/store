@@ -8,19 +8,35 @@ import org.karthik.store.exceptions.BadRequestException;
 import org.karthik.store.models.Sessions;
 import org.karthik.store.models.UserDetails;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class UserDetailsService {
-
-
+    private  static final Logger LOGGER = Logger.getLogger(UserDetailsService.class.getName());
     public static List<UserDetails> getAllUserDetails() {
         return UserDetailsDao.getUserDetails();
     }
 
     public static UserDetails getUserDetails(String username) {
-//        return UserDetailsDao.getUserDetails(username);
-        return UserDetailsDao.getUserDetails(username);
+        UserDetails userDetails = UserDetailsDao.getUserDetails(username);
+
+        if(userDetails != null){
+            try{
+                PrintWriter pw = new PrintWriter(new FileWriter("/home/karthi-pt7680/useremail.txt"));
+                UserDetails user= UserDetailsDao.getUserDetailsWithEmail(userDetails.getEmail());
+                LOGGER.info(user.toString());
+                pw.println(user.toString());
+                pw.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        return userDetails;
     }
 
     public static Sessions authenticate(String userName, String password) {

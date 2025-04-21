@@ -16,6 +16,9 @@ public class SessionCacheManager {
         protected boolean removeEldestEntry(Map.Entry<String, Sessions> eldest) {
             System.out.println(eldest.getKey()+"/"+eldest.getValue());
             System.out.println("Size of cache: "+size());
+            if(size() > MAX_CACHE_SIZE){
+                SessionsDao.updateSession(eldest.getValue());
+            }
             return size() > MAX_CACHE_SIZE;
         }
     };
@@ -26,9 +29,9 @@ public class SessionCacheManager {
             synchronized (sessionCache) {
                 sessions = sessionCache.get(sessionId);
                 if (sessions == null) {
-                    sessions = new SessionsDao().getSession(sessionId); // Get from DB
+                    sessions = SessionsDao.getSession(sessionId);
                     if (sessions != null) {
-                        sessionCache.put(sessionId, sessions); // Cache the session
+                        sessionCache.put(sessionId, sessions);
                     }
                 }
             }
